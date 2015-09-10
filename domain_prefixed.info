@@ -1,0 +1,9 @@
+name = Domain Prefied
+description = Domain Prefixed extension allows database table prefixing for use with subdomains.
+package = Domain Access
+dependencies[] = domain
+core = 6.x
+
+version = "6.x-1.0-dev"
+core = "6.x"
+project = "domain"
