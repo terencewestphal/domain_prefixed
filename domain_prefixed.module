@@ -1,0 +1,36 @@
+<?php
+/**
+ * Implements hook_domain_bootstrap_full().
+ */
+function domain_prefixed_domain_bootstrap_full($domain) {
+  global $databases;
+
+  // Define the prefix
+  $prefix = 'domain_' . $domain['domain_id'] . '_';
+
+  // Define tables to (copy and) load dynamically, modify at your ease
+  $tables = array('block', 'block_custom', 'menu_links', 'cache_menu');
+
+  foreach ($tables as $table) {
+    $new_table = $prefix . $table;
+    // If the table for the domain does not exists, duplicate the normal one
+    if (!db_table_exists($new_table)) {
+      // Copy structure
+      db_query("CREATE TABLE $new_table LIKE $table");
+      // Copy data
+      db_query("INSERT $new_table SELECT * from $table"); // Comment this line if you don't want data to be copied
+    }
+    $databases['default']['default']['prefix'][$table] = $prefix;
+  }
+
+  // This resets our current database connection with prefixes
+  Database::closeConnection();
+  Database::parseConnectionInfo();
+}
+
+/**
+ * Implements hook_enable().
+ */
+function domain_prefixed_enable() {
+  domain_bootstrap_register();
+}
